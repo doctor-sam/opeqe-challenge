@@ -116,7 +116,6 @@ const useStyles = makeStyles({
   }
 });
 
-console.log(theme);
 const App: React.FC = () => {
   const [goBack, setGoBack] = useState(true);
   const [orderType, setOrderType] = useState("delivery");
