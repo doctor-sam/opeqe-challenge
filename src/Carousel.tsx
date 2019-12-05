@@ -64,15 +64,13 @@ interface IPropsFoodCard {
 const useStyles = makeStyles((theme: Theme) => ({
   horizontalScroller: {
     overflow: "hidden",
-    height: "100%",
     position: "relative",
-    whiteSpace: 'nowrap',
-    flexWrap: 'nowrap',
-    transition: 'transform 0.5s cubic-bezier(.74, 0, .35, .96)',
+    flexWrap: "nowrap",
+    transition: "transform 0.5s cubic-bezier(.74, 0, .35, .96)"
   },
   root: {
-    margin: "0 5px",
-    width: "33%"
+    padding: "0 5px",
+    width: "250px"
   },
   banner: {
     borderRadius: 5,
@@ -206,7 +204,9 @@ export default function Carousel({ items }: any) {
     items.length && (
       <Grid container className={classes.horizontalScroller}>
         {items.map((item: IFood) => (
-          <FoodCard key={item.id} item={item} />
+          <Grid key={item.id} item>
+            <FoodCard item={item} />
+          </Grid>
         ))}
       </Grid>
     )
