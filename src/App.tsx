@@ -117,7 +117,7 @@ const useStyles = makeStyles({
     zIndex: 1
   }
 });
-function addUrlsAndCategoriesToFood(food: any) {
+function mapFood(food: any) {
   function addUrlToCategory(category:any) {
     return (filterName: string) => {
       return {
@@ -125,6 +125,10 @@ function addUrlsAndCategoriesToFood(food: any) {
         url: `?filterValue=${category.title}&filterType=${filterName}`
       }
     }
+  }
+
+  function addPreparationEstimate(preparationTime: number) {
+    return [preparationTime, 1.5 * preparationTime]
   }
   return {
     ...food,
@@ -134,7 +138,8 @@ function addUrlsAndCategoriesToFood(food: any) {
       addUrlToCategory(food.cuisineType)('cuisineTitle'),
       addUrlToCategory(food.mealType)('mealTitle'),
       addUrlToCategory(food.courseType)('courseTitle'),
-    ]
+    ],
+    preparationEstimate: addPreparationEstimate(food.preparation)
   };
 }
 
@@ -159,7 +164,7 @@ const App: React.FC = () => {
         <HeaderPromotion />
         <div className={classes.content}>
           <HeaderOrderOptions>{orderOptions}</HeaderOrderOptions>
-          <Carousel items={items.map(addUrlsAndCategoriesToFood)} />
+          <Carousel items={items.map(mapFood)} />
         </div>
       </div>
     </ThemeProvider>
