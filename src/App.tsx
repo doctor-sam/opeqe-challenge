@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { CssBaseline } from "@material-ui/core";
 import Header from "./Header";
-import Trebuchet from "./assets/trebuchet.woff";
 import HeaderPromotion from "./HeaderPromotion";
 import { makeStyles } from "@material-ui/styles";
 import OrderOptions, { HeaderOrderOptions } from "./OrderOptions";
+import Carousel from "./Carousel";
+import items from "./assets/store.json";
+import Trebuchet from "./assets/trebuchet.woff";
 
 declare module "@material-ui/core/styles/createMuiTheme" {
   interface Theme {
@@ -115,6 +117,26 @@ const useStyles = makeStyles({
     zIndex: 1
   }
 });
+function addUrlsAndCategoriesToFood(food: any) {
+  function addUrlToCategory(category:any) {
+    return (filterName: string) => {
+      return {
+        ...category,
+        url: `?filterValue=${category.title}&filterType=${filterName}`
+      }
+    }
+  }
+  return {
+    ...food,
+    url: `?cuisine=${food.cuisineType.title}&meal=${food.mealType.title}&course=${food.courseType.title}&id=${food.id}`,
+    categories: [
+      addUrlToCategory(food.menuType)('menuTitle'),
+      addUrlToCategory(food.cuisineType)('cuisineTitle'),
+      addUrlToCategory(food.mealType)('mealTitle'),
+      addUrlToCategory(food.courseType)('courseTitle'),
+    ]
+  };
+}
 
 const App: React.FC = () => {
   const [goBack, setGoBack] = useState(true);
@@ -137,6 +159,7 @@ const App: React.FC = () => {
         <HeaderPromotion />
         <div className={classes.content}>
           <HeaderOrderOptions>{orderOptions}</HeaderOrderOptions>
+          <Carousel items={items.map(addUrlsAndCategoriesToFood)} />
         </div>
       </div>
     </ThemeProvider>
