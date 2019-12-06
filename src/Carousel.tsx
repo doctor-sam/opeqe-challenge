@@ -185,7 +185,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: "center"
   },
   next: {
-    right: 5 * 2
+    right: 5
   },
   prev: {
     left: 5
@@ -216,6 +216,24 @@ const useStyles = makeStyles((theme: Theme) => ({
       animationFillMode: "forwards",
       animationPlayState: "running"
     }
+  },
+  pageNav: {
+    height: 1,
+    backgroundColor: "#d7d7d7",
+    marginTop: 10,
+    paddingRight: 30
+  },
+  pageNavBar: {
+    position: "relative"
+  },
+  pageNavMarker: {
+    transition: "left .5s cubic-bezier(.74,0,.35,.96)",
+    position: "absolute",
+    left: 0,
+    width: 30,
+    height: 2,
+    backgroundColor: "#000",
+    opacity: ".9"
   }
 }));
 
@@ -318,7 +336,8 @@ export default function Carousel({
     const containerWidth = containerRef.current.offsetWidth;
     const offset =
       (100 * (page * (slidesToShow - 1) * balanceWidth)) / containerWidth;
-    setPosition(Math.floor(offset));
+
+    setPosition(offset);
   }, [page, slidesToShow, totalItems]);
 
   function handleNext() {
@@ -343,12 +362,7 @@ export default function Carousel({
       style={{ transform: `translateX(-${position}%)` }}
       ref={containerRef}
     >
-      <Grid
-        ref={balanceElementRef}
-        key={firstItem.id}
-        item
-        className={classes.gridItem}
-      >
+      <Grid ref={balanceElementRef} item className={classes.gridItem}>
         <FoodCard item={firstItem} />
       </Grid>
       {otherItems.map((item: IFood) => (
@@ -358,11 +372,19 @@ export default function Carousel({
       ))}
     </Grid>
   );
-
+  console.log(totalPages);
   return (
     <div className={classes.carousel}>
       <div className={classes.carouselHeader}>
         <div className={classes.carouselTitle}>{title}</div>
+        <div className={classes.pageNav}>
+          <div className={classes.pageNavBar}>
+            <div
+              className={classes.pageNavMarker}
+              style={{ left: `${100 * (page / totalPages)}%` }}
+            ></div>
+          </div>
+        </div>
       </div>
       <div className={classes.horizontalScroller}>{cards}</div>
       {page !== 0 && (
