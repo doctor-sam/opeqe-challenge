@@ -182,10 +182,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: "center"
   },
   next: {
-    right: 0
+    right: 5
   },
   prev: {
-    left: 0
+    left: 5
   },
   navBtn: {
     backgroundColor: theme.palette.primary.main,
