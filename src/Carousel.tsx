@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles, Theme } from "@material-ui/core/styles";
 import TimerIcon from "@material-ui/icons/Timer";
-import { Link, Box, Grid } from "@material-ui/core";
+import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
+import { Link, Box, Grid, Container, IconButton } from "@material-ui/core";
 import clsx from "clsx";
 
 interface IMeal {
@@ -62,15 +64,61 @@ interface IPropsFoodCard {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
+  carousel: {
+    position: "relative",
+    overflow: "hidden"
+  },
+  carouselHeader: {
+    padding: `10px ${theme.spacing(2)}px`,
+    marginBottom: 10,
+  },
+  carouselTitle: {
+    fontSize: 20,
+    fontWeight: 700,
+  },
   horizontalScroller: {
     overflow: "hidden",
     position: "relative",
-    flexWrap: "nowrap",
-    transition: "transform 0.5s cubic-bezier(.74, 0, .35, .96)"
+    transition: "transform 0.5s cubic-bezier(.74, 0, .35, .96)",
+    margin: `0 ${theme.spacing(2)}px`,
   },
-  root: {
+  gridItem: {
+    flexWrap: "nowrap",
     padding: "0 5px",
-    width: "250px"
+    "&:first-child": {
+      paddingLeft: 0
+    }
+  },
+  grid: {
+    flexWrap: "nowrap"
+  },
+  "@keyframes bounce-in": {
+    "0%": {
+      transform: "scale(1)"
+    },
+    "70%": {
+      transform: "scale(1.3)"
+    },
+    "100%": {
+      transform: "scale(0)"
+    }
+  },
+  "@keyframes bounce-out": {
+    "0%": {
+      transform: "scale(0)"
+    },
+    "30%": {
+      transform: "scale(1.5)"
+    },
+    "50%": {
+      transform: "scale(1)"
+    },
+    "70%": {
+      transform: "scale(1.1)"
+    },
+    "100%": {
+      transform: "scale(1)"
+    }
   },
   banner: {
     borderRadius: 5,
@@ -79,6 +127,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     overflow: "hidden",
     width: "100%",
     marginBottom: 10
+  },
+  card: {
+    width: "320px"
   },
   image: {
     position: "absolute",
@@ -122,6 +173,46 @@ const useStyles = makeStyles((theme: Theme) => ({
   timerIcon: {
     fontSize: 14,
     verticalAlign: "middle"
+  },
+  navigation: {
+    position: "absolute",
+    top: 0,
+    display: "flex",
+    height: "100%",
+    alignItems: "center"
+  },
+  next: {
+    right: 0
+  },
+  prev: {
+    left: 0
+  },
+  navBtn: {
+    backgroundColor: theme.palette.primary.main,
+    color: "white",
+    padding: 8,
+    display: "inline-block",
+    animationName: "$bounce-in",
+    animationDuration: "0.4s",
+    animationTimingFunction: "cubic-bezier(.53, .72, .81, .31)",
+    animationDelay: "0s",
+    animationDirection: "normal",
+    animationIterationCount: 1,
+    animationFillMode: "forwards",
+    animationPlayState: "running",
+    "&:hover": {
+      backgroundColor: theme.palette.primary.main
+    },
+    "$carousel:hover &": {
+      animationName: "$bounce-out",
+      animationDuration: "0.8s",
+      animationTimingFunction: "linear",
+      animationDelay: "0s",
+      animationDirection: "normal",
+      animationIterationCount: 1,
+      animationFillMode: "forwards",
+      animationPlayState: "running"
+    }
   }
 }));
 
@@ -134,7 +225,7 @@ export function FoodCardSub({ subs }: IPropsFoodCard) {
         {main.title}
       </Link>
       {rest.map(type => (
-        <Link href={type.url} className={classes.subTitleType}>
+        <Link key={type.title} href={type.url} className={classes.subTitleType}>
           {type.title}
         </Link>
       ))}
@@ -177,7 +268,7 @@ export function FoodPrice({ price }: { price: number }) {
 export function FoodCard({ item }: { item: IFood }) {
   const classes = useStyles();
   return (
-    <div className={classes.root}>
+    <div className={classes.card}>
       <FoodImage src={item.image} title={item.title} />
       <div className={classes.title}>{item.title}</div>
       <FoodCardSub subs={item.categories} />
@@ -198,17 +289,34 @@ export function FoodCard({ item }: { item: IFood }) {
   );
 }
 
-export default function Carousel({ items }: any) {
+export default function Carousel({ items, title }: any) {
   const classes = useStyles();
+  const cards = items.length && (
+    <Grid container className={classes.grid}>
+      {items.map((item: IFood) => (
+        <Grid key={item.id} item className={classes.gridItem}>
+          <FoodCard item={item} />
+        </Grid>
+      ))}
+    </Grid>
+  );
+
   return (
-    items.length && (
-      <Grid container className={classes.horizontalScroller}>
-        {items.map((item: IFood) => (
-          <Grid key={item.id} item>
-            <FoodCard item={item} />
-          </Grid>
-        ))}
-      </Grid>
-    )
+    <div className={classes.carousel}>
+      <div className={classes.carouselHeader}>
+        <div className={classes.carouselTitle}>{title}</div>
+      </div>
+      <div className={classes.horizontalScroller}>{cards}</div>
+      <div className={clsx(classes.navigation, classes.next)}>
+        <IconButton className={classes.navBtn}>
+          <NavigateNextIcon />
+        </IconButton>
+      </div>
+      <div className={clsx(classes.navigation, classes.prev)}>
+        <IconButton className={classes.navBtn}>
+          <NavigateBeforeIcon />
+        </IconButton>
+      </div>
+    </div>
   );
 }

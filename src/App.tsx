@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import { CssBaseline } from "@material-ui/core";
+import { CssBaseline, Container } from "@material-ui/core";
 import Header from "./Header";
 import HeaderPromotion from "./HeaderPromotion";
 import { makeStyles } from "@material-ui/styles";
@@ -118,26 +118,26 @@ const useStyles = makeStyles({
   }
 });
 function mapFood(food: any) {
-  function addUrlToCategory(category:any) {
+  function addUrlToCategory(category: any) {
     return (filterName: string) => {
       return {
         ...category,
         url: `?filterValue=${category.title}&filterType=${filterName}`
-      }
-    }
+      };
+    };
   }
 
   function addPreparationEstimate(preparationTime: number) {
-    return [preparationTime, 1.5 * preparationTime]
+    return [preparationTime, 1.5 * preparationTime];
   }
   return {
     ...food,
     url: `?cuisine=${food.cuisineType.title}&meal=${food.mealType.title}&course=${food.courseType.title}&id=${food.id}`,
     categories: [
-      addUrlToCategory(food.menuType)('menuTitle'),
-      addUrlToCategory(food.cuisineType)('cuisineTitle'),
-      addUrlToCategory(food.mealType)('mealTitle'),
-      addUrlToCategory(food.courseType)('courseTitle'),
+      addUrlToCategory(food.menuType)("menuTitle"),
+      addUrlToCategory(food.cuisineType)("cuisineTitle"),
+      addUrlToCategory(food.mealType)("mealTitle"),
+      addUrlToCategory(food.courseType)("courseTitle")
     ],
     preparationEstimate: addPreparationEstimate(food.preparation)
   };
@@ -164,7 +164,7 @@ const App: React.FC = () => {
         <HeaderPromotion />
         <div className={classes.content}>
           <HeaderOrderOptions>{orderOptions}</HeaderOrderOptions>
-          <Carousel items={items.map(mapFood)} />
+          <Carousel items={items.map(mapFood)} title="American" />
         </div>
       </div>
     </ThemeProvider>
