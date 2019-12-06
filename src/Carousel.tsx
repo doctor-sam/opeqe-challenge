@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { makeStyles, Theme } from "@material-ui/core/styles";
+import React, { useState, useRef, useEffect } from "react";
+import { makeStyles, Theme, useTheme } from "@material-ui/core/styles";
 import TimerIcon from "@material-ui/icons/Timer";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import { Link, Box, Grid, Container, IconButton } from "@material-ui/core";
+import { Link, Box, Grid, useMediaQuery, IconButton } from "@material-ui/core";
 import clsx from "clsx";
 
 interface IMeal {
@@ -70,27 +70,24 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   carouselHeader: {
     padding: `10px ${theme.spacing(2)}px`,
-    marginBottom: 10,
+    marginBottom: 10
   },
   carouselTitle: {
     fontSize: 20,
-    fontWeight: 700,
+    fontWeight: 700
   },
   horizontalScroller: {
     overflow: "hidden",
     position: "relative",
-    transition: "transform 0.5s cubic-bezier(.74, 0, .35, .96)",
-    margin: `0 ${theme.spacing(2)}px`,
+    margin: `0 ${theme.spacing(2)}px`
   },
   gridItem: {
     flexWrap: "nowrap",
-    padding: "0 5px",
-    "&:first-child": {
-      paddingLeft: 0
-    }
+    paddingRight: 10
   },
   grid: {
-    flexWrap: "nowrap"
+    flexWrap: "nowrap",
+    transition: "transform 0.5s cubic-bezier(.74, 0, .35, .96)"
   },
   "@keyframes bounce-in": {
     "0%": {
@@ -129,7 +126,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: 10
   },
   card: {
-    width: "320px"
+    width: 465,
+    [theme.breakpoints.up("lg")]: {
+      width: 400
+    },
+    [theme.breakpoints.up("md")]: {
+      width: 370
+    }
   },
   image: {
     position: "absolute",
@@ -182,10 +185,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: "center"
   },
   next: {
-    right: 0
+    right: 5 * 2
   },
   prev: {
-    left: 0
+    left: 5
   },
   navBtn: {
     backgroundColor: theme.palette.primary.main,
@@ -256,6 +259,7 @@ export function FoodPreparationTime({ time }: { time: number[] }) {
       <TimerIcon className={classes.timerIcon} />
       {` `}
       {time.join("-")}
+      {` `} Mins
     </FoodTag>
   );
 }
@@ -289,11 +293,65 @@ export function FoodCard({ item }: { item: IFood }) {
   );
 }
 
-export default function Carousel({ items, title }: any) {
+interface ICarouselProps {
+  items: any[];
+  title: string;
+  slidesToShow: number;
+}
+
+export default function Carousel({
+  items,
+  title,
+  slidesToShow
+}: ICarouselProps) {
+  const [page, setPage] = useState(0);
+  const [position, setPosition] = useState(0);
+  const [firstItem, ...otherItems] = items;
+  const balanceElementRef = useRef<any>(null);
+  const containerRef = useRef<any>(null);
   const classes = useStyles();
+  const totalItems = items.length;
+  const totalPages = Math.ceil(totalItems / slidesToShow);
+
+  useEffect(() => {
+    const balanceWidth = balanceElementRef.current.offsetWidth;
+    const containerWidth = containerRef.current.offsetWidth;
+    const offset =
+      (100 * (page * (slidesToShow - 1) * balanceWidth)) / containerWidth;
+    setPosition(Math.floor(offset));
+  }, [page, slidesToShow, totalItems]);
+
+  function handleNext() {
+    const pageNumber = page + 1;
+    if (pageNumber <= totalPages) {
+      setPage(pageNumber);
+    }
+  }
+
+  function handlePrev() {
+    const pageNumber = page - 1;
+    console.log(pageNumber >= 0);
+    if (pageNumber >= 0) {
+      setPage(pageNumber);
+    }
+  }
+
   const cards = items.length && (
-    <Grid container className={classes.grid}>
-      {items.map((item: IFood) => (
+    <Grid
+      container
+      className={classes.grid}
+      style={{ transform: `translateX(-${position}%)` }}
+      ref={containerRef}
+    >
+      <Grid
+        ref={balanceElementRef}
+        key={firstItem.id}
+        item
+        className={classes.gridItem}
+      >
+        <FoodCard item={firstItem} />
+      </Grid>
+      {otherItems.map((item: IFood) => (
         <Grid key={item.id} item className={classes.gridItem}>
           <FoodCard item={item} />
         </Grid>
@@ -307,16 +365,20 @@ export default function Carousel({ items, title }: any) {
         <div className={classes.carouselTitle}>{title}</div>
       </div>
       <div className={classes.horizontalScroller}>{cards}</div>
-      <div className={clsx(classes.navigation, classes.next)}>
-        <IconButton className={classes.navBtn}>
-          <NavigateNextIcon />
-        </IconButton>
-      </div>
-      <div className={clsx(classes.navigation, classes.prev)}>
-        <IconButton className={classes.navBtn}>
-          <NavigateBeforeIcon />
-        </IconButton>
-      </div>
+      {page !== 0 && (
+        <div className={clsx(classes.navigation, classes.prev)}>
+          <IconButton className={classes.navBtn} onClick={handlePrev}>
+            <NavigateBeforeIcon />
+          </IconButton>
+        </div>
+      )}
+      {page !== totalPages && (
+        <div className={clsx(classes.navigation, classes.next)}>
+          <IconButton className={classes.navBtn} onClick={handleNext}>
+            <NavigateNextIcon />
+          </IconButton>
+        </div>
+      )}
     </div>
   );
 }

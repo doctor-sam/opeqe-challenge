@@ -164,7 +164,7 @@ const App: React.FC = () => {
         <HeaderPromotion />
         <div className={classes.content}>
           <HeaderOrderOptions>{orderOptions}</HeaderOrderOptions>
-          <Carousel items={items.map(mapFood)} title="American" />
+          <Carousel items={items.map(mapFood)} title="American" slidesToShow={4}  />
         </div>
       </div>
     </ThemeProvider>
