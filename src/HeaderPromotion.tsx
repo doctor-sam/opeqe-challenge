@@ -4,7 +4,7 @@ import HomeHeader from "./assets/HomeHeader.jpg";
 import Slider from "./Slider";
 import { Container } from "@material-ui/core";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: any) => ({
   root: {
     position: "fixed",
     top: 80,
@@ -16,7 +16,8 @@ const useStyles = makeStyles({
   container: {
     position: "relative",
     width: "100%",
-    height: "100%"
+    height: "100%",
+    padding: `0 ${theme.spacing(2)}px`
   },
   banner: {
     position: "absolute",
@@ -26,20 +27,20 @@ const useStyles = makeStyles({
     width: "100%",
     height: "100%"
   }
-});
+}));
 
 export default function HeaderPromotion() {
   const classes = useStyles();
   return (
     <div className={classes.root}>
       <img className={classes.banner} src={HomeHeader} alt="home promotions" />
-      <Container maxWidth="lg" className={classes.container}>
+      <div className={classes.container}>
         <Slider
           buttonsProps={{ color: "primary" }}
           autoInterval={4000}
           items={[1, 2, 3, 4]}
         />
-      </Container>
+      </div>
     </div>
   );
 }

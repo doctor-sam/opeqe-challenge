@@ -18,7 +18,8 @@ const useStyles = makeStyles((theme: any) => ({
     backgroundColor: hasScrolled ? "rgb(207, 207, 207)" : "rgb(239, 239, 239)"
   }),
   container: {
-    height: 80
+    height: 80,
+    padding: `0 ${theme.spacing(2)}px`
   },
   cartButton: {
     fontSize: 30
@@ -87,7 +88,7 @@ export default function Header({ showGoBack }: any) {
 
   return (
     <header className={classes.root}>
-      <Container maxWidth="lg">
+
         <Box
           display="flex"
           justifyContent="space-between"
@@ -128,7 +129,6 @@ export default function Header({ showGoBack }: any) {
             />
           </Box>
         </Box>
-      </Container>
     </header>
   );
 }
