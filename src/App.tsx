@@ -1,6 +1,10 @@
-import React, { useState } from "react";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import { CssBaseline, Container } from "@material-ui/core";
+import React, { useState, useEffect } from "react";
+import {
+  createMuiTheme,
+  ThemeProvider,
+
+} from "@material-ui/core/styles";
+import { CssBaseline, useMediaQuery } from "@material-ui/core";
 import Header from "./Header";
 import HeaderPromotion from "./HeaderPromotion";
 import { makeStyles } from "@material-ui/styles";
@@ -117,6 +121,7 @@ const useStyles = makeStyles({
     zIndex: 1
   }
 });
+
 function mapFood(food: any) {
   function addUrlToCategory(category: any) {
     return (filterName: string) => {
@@ -144,9 +149,29 @@ function mapFood(food: any) {
 }
 
 const App: React.FC = () => {
-  const [goBack, setGoBack] = useState(true);
+  const [goBack] = useState(true);
   const [orderType, setOrderType] = useState("delivery");
+  const [slidesCount, setSlidesCount] = useState(1);
+  const breakpointMatches = {
+    xs: useMediaQuery(theme.breakpoints.up('xs')),
+    sm: useMediaQuery(theme.breakpoints.up('sm')),
+    md: useMediaQuery(theme.breakpoints.up('md')),
+    lg: useMediaQuery(theme.breakpoints.up('lg'))
+  }
   const classes = useStyles();
+
+  useEffect(() => {
+    if(breakpointMatches.xs) {
+      setSlidesCount(1)
+    }
+    if(breakpointMatches.sm) {
+      setSlidesCount(2)
+    }
+    
+    if (breakpointMatches.md || breakpointMatches.lg) {
+      setSlidesCount(3)
+    }
+  }, [breakpointMatches.xs, breakpointMatches.sm, breakpointMatches.md, breakpointMatches.lg]);
 
   const handleOrderTypeChange = (type: string) => {
     setOrderType(type);
@@ -164,7 +189,11 @@ const App: React.FC = () => {
         <HeaderPromotion />
         <div className={classes.content}>
           <HeaderOrderOptions>{orderOptions}</HeaderOrderOptions>
-          <Carousel items={items.map(mapFood)} title="American" slidesToShow={4}  />
+          <Carousel
+            items={items.map(mapFood)}
+            title="American"
+            slidesToShow={slidesCount}
+          />
         </div>
       </div>
     </ThemeProvider>

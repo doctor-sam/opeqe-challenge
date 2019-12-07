@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import { makeStyles, Theme, useTheme } from "@material-ui/core/styles";
+import { makeStyles, Theme,  } from "@material-ui/core/styles";
 import TimerIcon from "@material-ui/icons/Timer";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import { Link, Box, Grid, useMediaQuery, IconButton } from "@material-ui/core";
+import { Link, Box, Grid, IconButton } from "@material-ui/core";
 import clsx from "clsx";
 
 interface IMeal {
@@ -83,7 +83,20 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   gridItem: {
     flexWrap: "nowrap",
-    paddingRight: 10
+    paddingRight: 10,
+    // one item mobile
+    width: "90%",
+    minWidth: "90%",
+    // two items
+    [theme.breakpoints.up("sm")]: {
+      width: "40%",
+      minWidth: "40%"
+    },
+    // three items
+    [theme.breakpoints.up("md")]: {
+      width: "33%",
+      minWidth: "33%"
+    }
   },
   grid: {
     flexWrap: "nowrap",
@@ -125,15 +138,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: "100%",
     marginBottom: 10
   },
-  card: {
-    width: 465,
-    [theme.breakpoints.up("lg")]: {
-      width: 400
-    },
-    [theme.breakpoints.up("md")]: {
-      width: 370
-    }
-  },
+  card: {},
   image: {
     position: "absolute",
     top: 0,
@@ -332,24 +337,27 @@ export default function Carousel({
   const totalPages = Math.ceil(totalItems / slidesToShow);
 
   useEffect(() => {
+    setPage(0);
+  }, [slidesToShow]);
+
+  useEffect(() => {
     const balanceWidth = balanceElementRef.current.offsetWidth;
     const containerWidth = containerRef.current.offsetWidth;
     const offset =
-      (100 * (page * (slidesToShow - 1) * balanceWidth)) / containerWidth;
+      (100 * (page * slidesToShow * balanceWidth)) / containerWidth;
 
     setPosition(offset);
-  }, [page, slidesToShow, totalItems]);
+  }, [page, slidesToShow, totalPages]);
 
   function handleNext() {
     const pageNumber = page + 1;
-    if (pageNumber <= totalPages) {
+    if (pageNumber <= totalPages - 1) {
       setPage(pageNumber);
     }
   }
 
   function handlePrev() {
     const pageNumber = page - 1;
-    console.log(pageNumber >= 0);
     if (pageNumber >= 0) {
       setPage(pageNumber);
     }
@@ -372,7 +380,7 @@ export default function Carousel({
       ))}
     </Grid>
   );
-  console.log(totalPages);
+
   return (
     <div className={classes.carousel}>
       <div className={classes.carouselHeader}>
@@ -394,7 +402,7 @@ export default function Carousel({
           </IconButton>
         </div>
       )}
-      {page !== totalPages && (
+      {page !== totalPages - 1 && (
         <div className={clsx(classes.navigation, classes.next)}>
           <IconButton className={classes.navBtn} onClick={handleNext}>
             <NavigateNextIcon />
