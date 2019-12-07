@@ -20,7 +20,7 @@ const useStyles = makeStyles({
     "&-enter": {
       opacity: 0
     },
-    "&-active": {
+    "&-enter-active": {
       opacity: 1
     },
     "&-exit": {
