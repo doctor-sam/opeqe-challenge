@@ -389,7 +389,7 @@ export default function Carousel({
           <div className={classes.pageNavBar}>
             <div
               className={classes.pageNavMarker}
-              style={{ left: `${100 * (page / totalPages)}%` }}
+              style={{ left: `${100 * (page / (totalPages-1) )}%` }}
             ></div>
           </div>
         </div>
