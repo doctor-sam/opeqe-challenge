@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { makeStyles, Theme,  } from "@material-ui/core/styles";
+import { makeStyles, Theme } from "@material-ui/core/styles";
+import ScrollContainer from "react-indiana-drag-scroll";
+import { debounce } from "lodash";
 import TimerIcon from "@material-ui/icons/Timer";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
@@ -320,15 +322,18 @@ interface ICarouselProps {
   items: any[];
   title: string;
   slidesToShow: number;
+  scrollable: boolean;
 }
 
 export default function Carousel({
   items,
   title,
-  slidesToShow
+  slidesToShow,
+  scrollable
 }: ICarouselProps) {
   const [page, setPage] = useState(0);
   const [position, setPosition] = useState(0);
+  const [pagationMarkerLeft, setPagationMarkerLeft] = useState(0);
   const [firstItem, ...otherItems] = items;
   const balanceElementRef = useRef<any>(null);
   const containerRef = useRef<any>(null);
@@ -338,6 +343,7 @@ export default function Carousel({
 
   useEffect(() => {
     setPage(0);
+    setPagationMarkerLeft(0);
   }, [slidesToShow]);
 
   useEffect(() => {
@@ -347,6 +353,7 @@ export default function Carousel({
       (100 * (page * slidesToShow * balanceWidth)) / containerWidth;
 
     setPosition(offset);
+    setPagationMarkerLeft(100 * (page / (totalPages - 1)));
   }, [page, slidesToShow, totalPages]);
 
   function handleNext() {
@@ -385,24 +392,39 @@ export default function Carousel({
     <div className={classes.carousel}>
       <div className={classes.carouselHeader}>
         <div className={classes.carouselTitle}>{title}</div>
-        <div className={classes.pageNav}>
+        <div
+          className={classes.pageNav}
+          style={scrollable ? { paddingRight: 0 } : {}}
+        >
           <div className={classes.pageNavBar}>
             <div
               className={classes.pageNavMarker}
-              style={{ left: `${100 * (page / (totalPages-1) )}%` }}
+              style={{ left: `${pagationMarkerLeft}%` }}
             ></div>
           </div>
         </div>
       </div>
-      <div className={classes.horizontalScroller}>{cards}</div>
-      {page !== 0 && (
+      <div className={classes.horizontalScroller}>
+        {cards && scrollable ? (
+          <ScrollContainer
+            onScroll={(left: number, top: number, width: number) =>
+              setPagationMarkerLeft((100 * left) / width)
+            }
+          >
+            {cards}
+          </ScrollContainer>
+        ) : (
+          cards
+        )}
+      </div>
+      {page !== 0 && !scrollable && (
         <div className={clsx(classes.navigation, classes.prev)}>
           <IconButton className={classes.navBtn} onClick={handlePrev}>
             <NavigateBeforeIcon />
           </IconButton>
         </div>
       )}
-      {page !== totalPages - 1 && (
+      {page !== totalPages - 1 && !scrollable && (
         <div className={clsx(classes.navigation, classes.next)}>
           <IconButton className={classes.navBtn} onClick={handleNext}>
             <NavigateNextIcon />

@@ -2,8 +2,14 @@ import React, { useState, useEffect } from "react";
 import {
   createMuiTheme,
   ThemeProvider,
-
 } from "@material-ui/core/styles";
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile,
+} from "react-device-detect";
+
 import { CssBaseline, useMediaQuery } from "@material-ui/core";
 import Header from "./Header";
 import HeaderPromotion from "./HeaderPromotion";
@@ -193,6 +199,7 @@ const App: React.FC = () => {
             items={items.map(mapFood)}
             title="American"
             slidesToShow={slidesCount}
+            scrollable={isMobile}
           />
         </div>
       </div>
